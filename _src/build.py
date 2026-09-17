@@ -1158,7 +1158,10 @@ def rehber_sayfasi(r):
 
 # ── Anasayfa ────────────────────────────────────────────────────────────────
 def anasayfa():
-    hero_g, hero_sinif = hero_sag("Tıkanıklık açma servisi ekibi çalışırken")
+    # ⚠️ kart=False: kullanıcının verdiği görsel hazır bir tanıtım banner'ı;
+    #    üstüne yüzen kart koymak banner'ın kendi rozetlerini örtüyordu.
+    hero_g, hero_sinif = hero_sag(
+        "TESSA TESİSAT — İstanbul geneli aynı gün tıkanıklık açma servisi", kart=False)
     hizmet_kartlari = "".join(
       f'<a class="kart" href="{ic(hizmet_yolu(h))}">'
       f'<span class="ikon-yv">{svg(h["ikon"])}</span>'
