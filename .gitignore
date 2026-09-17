@@ -1,0 +1,3 @@
+_src/__pycache__/
+_src/*.yedek-*
+*.pyc
