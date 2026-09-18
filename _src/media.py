@@ -17,7 +17,10 @@ from PIL import Image
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IMG, VID = os.path.join(KOK, "images"), os.path.join(KOK, "videos")
 GENISLIKLER = (500, 900, 1600)
-ATLA = ("favicon-", "apple-touch-icon", "logo-512")
+# ⚠️ Logo türevleri logo.py'nin işi; bunlara srcset üretilmiyor,
+#    kaynak PNG de (tessa-...-logo.png) doğrudan sayfaya girmiyor.
+ATLA = ("favicon-", "apple-touch-icon", "logo-512", "logo-tessa", "logo-damla",
+        "tessa-tikaniklik-acma-logo")
 
 def gorseller():
     n = 0
@@ -45,18 +48,35 @@ def gorseller():
                 n += 1
     return n
 
-def posterler():
-    """Videonun 1. saniyesinden poster çıkarır (ffmpeg varsa)."""
+def ffmpeg_yolu():
+    """Sistemde ffmpeg yoksa pip'ten gelen statik binary'ye düşer.
+    ⚠️ Bu sunucuda apt ffmpeg YOK; `pip install imageio-ffmpeg` ile geldi."""
     if subprocess.call(["which", "ffmpeg"], stdout=subprocess.DEVNULL,
-                       stderr=subprocess.DEVNULL) != 0:
+                       stderr=subprocess.DEVNULL) == 0:
+        return "ffmpeg"
+    try:
+        import imageio_ffmpeg
+        yol = imageio_ffmpeg.get_ffmpeg_exe()
+        return yol if os.path.exists(yol) else None
+    except Exception:
+        return None
+
+def posterler():
+    """Videonun 1,5. saniyesinden poster çıkarır.
+    ⚠️ Videolar DİKEY (9:16 reels) — sabit 'scale=900:-2' onları 900px genişliğe
+       şişiriyordu. Uzun kenar 900'e göre ölçekleniyor."""
+    ff = ffmpeg_yolu()
+    if not ff:
         return -1
     n = 0
     for v in sorted(glob.glob(os.path.join(VID, "*.mp4"))):
         hedef = os.path.splitext(v)[0] + ".jpg"
         if os.path.exists(hedef) and os.path.getmtime(hedef) > os.path.getmtime(v):
             continue
-        subprocess.call(["ffmpeg", "-y", "-loglevel", "error", "-ss", "1", "-i", v,
-                         "-frames:v", "1", "-vf", "scale=900:-2", "-q:v", "4", hedef])
+        subprocess.call([ff, "-y", "-loglevel", "error", "-ss", "1.5", "-i", v,
+                         "-frames:v", "1",
+                         "-vf", "scale='if(gt(iw,ih),900,-2)':'if(gt(iw,ih),-2,900)'",
+                         "-q:v", "4", hedef])
         if os.path.exists(hedef):
             n += 1
     return n

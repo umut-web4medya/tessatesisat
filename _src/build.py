@@ -56,6 +56,16 @@ def olcu(taban):
                 return None
     return None
 
+def img_olcu(gorece):
+    """images/ dışındaki tek dosyalar (logo, video posteri) için en/boy.
+    ⚠️ width/height yazılmazsa görsel yüklenince yerleşim kayıyor (CLS)."""
+    try:
+        from PIL import Image
+        with Image.open(os.path.join(KOK, gorece)) as im:
+            return f' width="{im.size[0]}" height="{im.size[1]}"'
+    except Exception:
+        return ""
+
 def gorsel(taban, alt, sinif="", boy="(min-width:1000px) 640px, 100vw", oncelik=False):
     if not gorsel_var(taban):
         return ""
@@ -172,6 +182,10 @@ IK = {
  "menu":  '<path d="M3 6h18v2H3V6Zm0 5h18v2H3v-2Zm0 5h18v2H3v-2Z"/>',
  "kapat": '<path d="m5.3 3.9 14.8 14.8-1.4 1.4L3.9 5.3l1.4-1.4Zm14.8 1.4L5.3 20.1l-1.4-1.4L18.7 3.9l1.4 1.4Z"/>',
  "yildiz":'<path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1L12 2Z"/>',
+ "oynat": '<path d="M8 5.1v13.8c0 .8.9 1.3 1.6.9l10.8-6.9a1.1 1.1 0 0 0 0-1.8L9.6 4.2A1.1 1.1 0 0 0 8 5.1Z"/>',
+ "fiyat": '<path d="M12.4 2.2 21 3.1a1 1 0 0 1 .9.9l.9 8.6a1 1 0 0 1-.3.8l-9.1 9.1a1 1 0 0 1-1.4 0l-9-9a1 1 0 0 1 0-1.4l9.1-9.1a1 1 0 0 1 .8-.3Zm4.7 3.6a1.8 1.8 0 1 0 2.6 2.6 1.8 1.8 0 0 0-2.6-2.6Z"/>',
+ "onay":  '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.3 14.4-4.1-4.1 1.5-1.5 2.6 2.6 5.7-5.7 1.5 1.5-7.2 7.2Z"/>',
+ "kalp":  '<path d="M12 21s-8-4.9-8-10.4A4.6 4.6 0 0 1 12 7.6a4.6 4.6 0 0 1 8 3c0 5.5-8 10.4-8 10.4Z"/>',
 }
 
 def svg(ad, sinif=""):
@@ -181,23 +195,37 @@ def svg(ad, sinif=""):
 
 # ── Düğmeler ────────────────────────────────────────────────────────────────
 def tel_btn(metin=None, sinif="dg dg-koyu"):
-    return (f'<a class="{sinif}" href="tel:{S["tel_link"]}" '
-            f'data-w4="ara">{svg("tel")}{e(metin or "Hemen Ara")}</a>')
+    """⚠️ Etiket <span class="dg-yz"> içinde — dar ekranda CSS ile gizlenip
+    düğme ikona indiriliyor. Çıplak metin düğümü CSS ile gizlenemiyordu ve
+    başlık 390px'te 6px taşıyordu."""
+    return (f'<a class="{sinif}" href="tel:{S["tel_link"]}" data-w4="ara">'
+            f'{svg("tel")}<span class="dg-yz">{e(metin or "Hemen Ara")}</span></a>')
 
 def wa_btn(mesaj="Merhaba, tıkanıklık açma için bilgi almak istiyorum.", metin="WhatsApp",
            sinif="dg dg-wa"):
     from urllib.parse import quote
     return (f'<a class="{sinif}" href="https://wa.me/{S["wa"]}?text={quote(mesaj)}" '
-            f'target="_blank" rel="noopener">{svg("wa")}{e(metin)}</a>')
+            f'target="_blank" rel="noopener">{svg("wa")}'
+            f'<span class="dg-yz">{e(metin)}</span></a>')
 
 def dock():
-    """Yüzen eylem yığını — referans sitedeki desenin sadeleştirilmiş hâli."""
+    """Yüzen eylem yığını — 2026 yenilemesi.
+    Kullanıcı eskisi için "hiç dikkat çekmiyor" dedi: üç soluk pilden ikisi aynı
+    numaraya gidiyordu. Artık İKİ büyük eylem var, her birinde nabız halkası.
+    ⚠️ Sayfa dibine yaklaşınca GİZLENİYOR (app.js) — sabit kalırsa mobilde
+       Web4Medya imzasının üstüne oturup linki tıklanamaz yapıyor.
+       ⛔ Bu davranışı kaldırma ([[reference_w4_tasarim_imzasi]])."""
+    from urllib.parse import quote
+    wa_mesaj = quote("Merhaba, tıkanıklık açma için bilgi almak istiyorum.")
     return (
-      '<div class="dock">'
-      f'<a class="d-koyu" href="tel:{S["tel_link"]}">{svg("tel")}<span class="yz">Acil Tesisatçı</span></a>'
-      f'<a class="d-koyu" href="tel:{S["tel_link"]}">{svg("gider")}<span class="yz">Gider Açma</span></a>'
-      f'<a class="d-wa" href="https://wa.me/{S["wa"]}" target="_blank" rel="noopener">'
-      f'{svg("wa")}<span class="yz">WhatsApp</span></a>'
+      '<div class="dock" aria-label="Hızlı iletişim">'
+      f'<a class="d-dg d-ara" href="tel:{S["tel_link"]}" data-w4="ara">'
+      f'<span class="d-yv">{svg("tel")}</span>'
+      f'<span class="d-yz"><b>Hemen Ara</b><small>{e(S["tel_goster"])}</small></span></a>'
+      f'<a class="d-dg d-wa" href="https://wa.me/{S["wa"]}?text={wa_mesaj}" '
+      f'target="_blank" rel="noopener">'
+      f'<span class="d-yv">{svg("wa")}</span>'
+      f'<span class="d-yz"><b>WhatsApp</b><small>İletişim</small></span></a>'
       '</div>')
 
 
@@ -207,27 +235,46 @@ def dock():
 HERO_GORSEL = "tikaniklik-acma-servisi"
 
 def hero_sag(alt, kart=True):
+    """⚠️ Görselin TAMAMI arama bağlantısı (kullanıcı istedi).
+    Görselin tıklanabilir olduğu görünmezse kimse tıklamaz; bu yüzden üstünde
+    görünür bir "Hemen Ara" rozeti duruyor. Rozet <a>'nın İÇİNDE — ayrı bir
+    bağlantı olsaydı iç içe <a> geçersiz HTML olurdu."""
     g = gorsel(HERO_GORSEL, alt, oncelik=True)
     if not g:
         return "", " hero-tek"
     k = ('<div class="hero-kart"><span class="yv">' + svg("kalkan") + '</span>'
          '<span><b>Kırmadan, dökmeden</b>'
          '<span>Kameralı tespit ile kalıcı çözüm</span></span></div>') if kart else ""
-    return f'<div class="hero-gorsel">{g}{k}</div>', ""
+    # ⚠️ Rozet görselin ÜSTÜNE bindirilmişti; kullanıcının banner'ının kendi
+    #    telefon numarasını örtüyordu. Artık görselin ALTINDA, aynı bağlantının
+    #    içinde bir eylem çubuğu. ⛔ Görselin üstüne geri taşıma.
+    ara = (
+      f'<a class="hero-ara" href="tel:{S["tel_link"]}" data-w4="ara" '
+      f'aria-label="{e(S["marka"])} hemen ara: {e(S["tel_goster"])}">{g}'
+      f'<span class="hero-ara-rozet">{svg("tel")}'
+      f'<span class="hero-ara-yz"><b>Hemen Ara</b><small>{e(S["tel_goster"])}</small></span>'
+      f'</span></a>')
+    return f'<div class="hero-gorsel">{ara}{k}</div>', ""
 
-# ── Logo ────────────────────────────────────────────────────────────────────
+# ── Logo ───────────────────────────────────────────────────────────────────
+# Kullanıcı gerçek logoyu 2026-09-18'de yükledi (images/tessa-tikaniklik-acma-logo.png).
+# Türevleri `python3 _src/logo.py` üretir.
+# ⚠️ Yatay logodaki "TESSA" sözcük işareti LACİVERT (#053B7C) — koyu zeminde
+#    okunmuyor. Bu yüzden alt bilgide yatay logo BASILMIYOR; damla işareti +
+#    beyaz sözcük işareti ayrı ayrı basılıyor. ⛔ Koyu zemine yatay logoyu koyma.
 def logo(koyu_zemin=False):
-    """⏳ Gerçek marka logosu gelene kadar tipografik işaret + damla sembolü.
-    Referans sitedeki logo 'TESSA' üstte, 'TESİSAT' altta harf aralıklı."""
-    renk = "#fff" if koyu_zemin else "var(--metin)"
+    etiket = f'aria-label="{e(S["marka"])} ana sayfa"'
+    if koyu_zemin:
+        return (
+          f'<a class="logo logo-koyu" href="{ic()}" {etiket}>'
+          f'<img src="{ic("images/logo-damla.webp")}"{img_olcu("images/logo-damla.webp")} '
+          f'alt="" loading="lazy" decoding="async">'
+          f'<span class="logo-yz"><b>TESSA</b><span>TESİSAT</span></span></a>')
     return (
-      f'<a class="logo" href="{ic()}" aria-label="{e(S["marka"])} ana sayfa">'
-      f'<svg width="34" height="40" viewBox="0 0 34 40" aria-hidden="true" focusable="false">'
-      f'<path d="M17 1C17 1 3 15.4 3 24.2A14 14 0 0 0 31 24.2C31 15.4 17 1 17 1Z" '
-      f'fill="var(--altin)"/>'
-      f'<path d="M17 9.5c0 0-7.4 8-7.4 13.1a7.4 7.4 0 0 0 14.8 0C24.4 17.5 17 9.5 17 9.5Z" '
-      f'fill="{"#0E1D2E" if not koyu_zemin else "#16293D"}" opacity=".92"/></svg>'
-      f'<span class="logo-yz"><b style="color:{renk}">TESSA</b><span>TESİSAT</span></span></a>')
+      f'<a class="logo" href="{ic()}" {etiket}>'
+      f'<img src="{ic("images/logo-tessa.webp")}"{img_olcu("images/logo-tessa.webp")} '
+      f'alt="{e(S["marka"])} logosu" fetchpriority="high" decoding="async">'
+      f'</a>')
 
 # ── head ────────────────────────────────────────────────────────────────────
 def head(baslik, aciklama, yol, sema="", tur="website"):
@@ -264,7 +311,8 @@ def head(baslik, aciklama, yol, sema="", tur="website"):
 # ── Üst başlık ──────────────────────────────────────────────────────────────
 def ust_header(aktif=""):
     ogeler = [("", "Ana Sayfa", "anasayfa"), ("hakkimizda/", "Hakkımızda", "hakkimizda")]
-    son = [("bolgeler/", "Bölgeler", "bolgeler"), ("iletisim/", "İletişim", "iletisim")]
+    son = [(FIYAT_YOL, "Fiyatlar", "fiyatlar"),
+           ("bolgeler/", "Bölgeler", "bolgeler"), ("iletisim/", "İletişim", "iletisim")]
 
     def bag(yol, ad, anahtar):
         gec = ' aria-current="page"' if aktif == anahtar else ""
@@ -285,6 +333,7 @@ def ust_header(aktif=""):
 <div class="acilir-liste">{acilir}</div></div>
 {bag(*son[0])}
 {bag(*son[1])}
+{bag(*son[2])}
 </nav>
 <div class="ust-sag">
 <a class="tel-kart" href="tel:{S["tel_link"]}">
@@ -334,6 +383,7 @@ def w4_imza():
 # ── Alt bilgi ───────────────────────────────────────────────────────────────
 def alt_bilgi():
     menu_bag = [("", "Ana Sayfa"), ("hakkimizda/", "Hakkımızda"), ("hizmetler/", "Hizmetlerimiz"),
+                (FIYAT_YOL, "Fiyat Listesi"),
                 ("bolgeler/", "Hizmet Bölgeleri"), ("iletisim/", "İletişim"),
                 ("gizlilik-politikasi/", "Gizlilik Politikası"), ("kullanim-sartlari/", "Kullanım Şartları")]
     hiz_bag = [(hizmet_yolu(HIZMET[s]), HIZMET[s]["ad"]) for s in D.MENU_HIZMET[:6]]
@@ -397,29 +447,55 @@ def harita(baslik="Deponun konumu"):
             f'</button></div>')
 
 # ── Video ───────────────────────────────────────────────────────────────────
+# ⚠️ Videolar DİKEY (9:16). Eski 16/10 kutu onları ortadan kırpıyordu.
+# ⚠️ FACADE: <video> DOM'a tıklanana kadar girmiyor — 4 video = 11 MB, hepsi
+#    preload olsaydı mobil veriyi boşa yakardı. Poster görünür, tıklanınca
+#    gerçek <video> takılıp oynatılıyor (app.js).
 def video_var(dosya):
     return os.path.exists(os.path.join(KOK, "videos", dosya + ".mp4"))
 
-def video_bolum(sayfa_anahtari, baslik="Çalışmalarımızdan"):
+def video_kart(x):
+    poster = f'videos/{x["dosya"]}.jpg'
+    if os.path.exists(os.path.join(KOK, poster)):
+        gr = (f'<img src="{ic(poster)}"{img_olcu(poster)} alt="{e(x["alt"])}" '
+              f'loading="lazy" decoding="async">')
+    else:
+        gr = '<span class="reel-bos" aria-hidden="true"></span>'
+    return (
+      f'<figure class="reel">'
+      f'<button class="reel-ac" type="button" data-video="{ic("videos/" + x["dosya"] + ".mp4")}" '
+      f'aria-label="{e(x["baslik"])} videosunu oynat">{gr}'
+      f'<span class="reel-oynat">{svg("oynat")}</span>'
+      f'<span class="reel-sure">Video</span></button>'
+      f'<figcaption><b>{e(x["baslik"])}</b><span>{e(x["alt"])}</span></figcaption>'
+      f'</figure>')
+
+def video_listesi(sayfa_anahtari):
+    return [x for x in D.VIDEOLAR
+            if sayfa_anahtari in x["sayfa"] and video_var(x["dosya"])]
+
+def video_bolum(sayfa_anahtari, baslik="Sahadan Çalışmalarımız",
+                alt_metin="Kendi ekibimizin işbaşındaki kayıtları — stok görsel değil.",
+                videolar=None):
     """⚠️ Dosya yoksa bölüm HİÇ basılmaz — boş kutu çıkmaz."""
-    v = [x for x in D.VIDEOLAR if sayfa_anahtari in x["sayfa"] and video_var(x["dosya"])]
+    v = videolar if videolar is not None else video_listesi(sayfa_anahtari)
     if not v:
         return ""
-    kartlar = []
-    for x in v:
-        poster = f'videos/{x["dosya"]}.jpg'
-        p = f' poster="{ic(poster)}"' if os.path.exists(os.path.join(KOK, poster)) else ""
-        kartlar.append(
-          f'<figure class="vid"><video controls preload="none"{p} '
-          f'playsinline width="640" height="400">'
-          f'<source src="{ic("videos/" + x["dosya"] + ".mp4")}" type="video/mp4">'
-          f'Tarayıcınız videoyu desteklemiyor.</video>'
-          f'<figcaption class="yz"><b>{e(x["baslik"])}</b>'
-          f'<span>{e(x["alt"])}</span></figcaption></figure>')
-    return (f'<section class="bolum bolum-ac"><div class="kap">'
-            f'<div class="b-ust"><span class="b-etiket">Sahadan</span>'
-            f'<h2>{e(baslik)}</h2></div>'
-            f'<div class="vid-izgara">{"".join(kartlar)}</div></div></section>')
+    return (f'<section class="bolum bolum-reel"><div class="kap">'
+            f'{b_ust("Sahadan", "Çalışmalarımızdan", "Videolar", alt_metin)}'
+            f'<div class="reel-serit">{"".join(video_kart(x) for x in v)}</div>'
+            f'</div></section>')
+
+def video_ilce(i):
+    """⚠️ 39 ilçe sayfasının hepsine AYNI video yığınını koymak tekrar olurdu.
+    Her ilçe slug'ından hesaplanan sabit tohumla TEK video düşüyor —
+    H2 rotasyonuyla aynı mantık."""
+    havuz = [x for x in D.VIDEOLAR if video_var(x["dosya"])]
+    if not havuz:
+        return ""
+    secili = havuz[tohum(i["slug"], "video") % len(havuz)]
+    return video_bolum(None, videolar=[secili],
+                       alt_metin=f'{ek(i, "loc")} çalıştığımız işlerden bir kare.')
 
 
 # ── İçerik üreticileri ──────────────────────────────────────────────────────
@@ -954,6 +1030,7 @@ def ilce_sayfasi(i):
     govde.append(komsu_agi(i))
     kap_kalip, _ = sec(D.H2_KAPANIS, i["slug"], "kapanis")
     govde.append(f"<h2>{e(h2_yaz(kap_kalip, i))}</h2>" + govde_uret("kapanis", i))
+    govde.append(fiyat_cagri())
     govde.append(p(f'Daha fazlası için <a href="{ic()}">{e(ana_anchor(i))}</a> sayfamıza '
                    f'göz atabilir, ev yöntemlerini merak ediyorsanız '
                    f'<a href="{ic("lavabo-acma-yontemleri/")}">lavabo ve gider açma '
@@ -999,7 +1076,7 @@ def ilce_sayfasi(i):
 <article class="govde">{"".join(govde)}</article>
 {yan}
 </div></div></section>
-{video_bolum("ilce")}
+{video_ilce(i)}
 {sss_bolum(sorular, f"{ad} Tıkanıklık Açma — Sık Sorulan Sorular")}
 {cta_band(f"{ad} tıkanıklık açma için bekleyen bir işiniz mi var?",
           "Telefonda durumu birlikte değerlendirelim, ekip doğru ekipmanla yola çıksın.")}
@@ -1059,6 +1136,7 @@ def hizmet_sayfasi(h):
                        + ", ".join(f"<b>{e(x)}</b>" for x in h["es"]) + "."))
     if h["slug"] in D.HIZMET_GOVDE:
         govde.append(blok_yaz(D.HIZMET_GOVDE[h["slug"]]))
+    govde.append(f'<h2>{e(h["ad"])} Ücreti</h2>' + fiyat_cagri(h["slug"]))
     govde.append(hizmet_ilce_agi(h))
     digerleri = [x for x in D.HIZMETLER if x["slug"] != h["slug"]][:8]
     govde.append('<h2>Diğer Hizmetlerimiz</h2><ul class="cipler">'
@@ -1136,6 +1214,7 @@ def rehber_sayfasi(r):
 <p>{e(r["ozet"])}</p></div>
 <div class="yan-izgara">
 <article class="govde">{blok_yaz(r["blok"])}
+{fiyat_cagri()}
 {p(f'Denediniz ve olmadıysa ya da yukarıdaki uyarı işaretlerinden biri varsa, '
    f'<a href="{ic("tikaniklik-acma/")}">tıkanıklık açma</a> ve '
    f'<a href="{ic("gider-acma/")}">gider açma</a> hizmetimizle İstanbul un 39 ilçesinde '
@@ -1151,10 +1230,253 @@ def rehber_sayfasi(r):
                           "kirmadan-tikaniklik-acma", "robotla-tikaniklik-acma"])
       + f"""</ul></div></aside>
 </div></div></section>
+{video_bolum(r["slug"])}
 {sss_bolum(sorular)}
 {cta_band("Denediniz, açılmadı mı?", "Zorlamayın — yanlış müdahale çoğu zaman asıl işten daha pahalıya mal oluyor.")}
 </main>
 """ + alt_bilgi())
+
+# ── Fiyat sayfası ───────────────────────────────────────────────────────────
+# Kullanıcı 2026-09-18'de gerçek fiyat listesini verdi ve hedef kelimeleri
+# saydı: tıkanıklık açma fiyatları · gider açma fiyatları · tıkanıklık açma
+# ücreti · gider açma ücreti.
+# ⚠️ DÖRDÜ DE TEK SAYFADA. "…ücretleri" için ikinci bir sayfa AÇMA — Türkçe'de
+#    fiyat/ücret neredeyse eşanlamlı, iki sayfa kannibalizasyon olurdu
+#    (ilçe ağacında verilen kararla aynı gerekçe).
+# ⛔ Rakamlar YALNIZCA data.FIYAT_KALEM / FIYAT_TABLO'dan gelir.
+FIYAT_YOL = D.FIYAT["slug"] + "/"
+
+def fiyat_gorseli():
+    """Kullanıcının 2026-09-18'de yüklediği fiyat listesi infografiği (784×1162).
+    ⚠️ gorsel() burada kullanılamıyor: kaynak 784px, en büyük türev 500px kalıyor
+       ve yazılar okunmaz hâle geliyordu. Kaynak dosya srcset'e ELLE ekleniyor."""
+    tam = "images/fiyat-listesi.webp"
+    if not os.path.exists(os.path.join(KOK, tam)):
+        return ""
+    kucuk_yol = "images/w500/fiyat-listesi.webp"
+    ss = ""
+    if os.path.exists(os.path.join(KOK, kucuk_yol)):
+        ss = (f' srcset="{ic(kucuk_yol)} 500w, {ic(tam)} 784w"'
+              f' sizes="(min-width:760px) 560px, 100vw"')
+    return (
+      f'<figure class="fiyat-gorsel">'
+      f'<img src="{ic(tam)}"{ss}{img_olcu(tam)} loading="lazy" decoding="async" '
+      f'alt="Tessa Tesisat gider açma fiyatları: tuvalet tıkanıklığı 2.500–3.000 TL, '
+      f'lavabo ve banyo gideri tıkanıklığı 2.000–2.500 TL">'
+      f'<figcaption>Tıkanıklık açma ve gider açma fiyat listemizin özeti. '
+      f'Rakamlar standart tıkanıklıklar içindir; kesin ücret yerinde tespitten sonra '
+      f'netleşir.</figcaption></figure>')
+
+def fiyat_kart(k):
+    durumlar = "".join(f'<li><b>{e(a)}:</b> {e(b)}</li>' for a, b in k["durum"])
+    h = HIZMET.get(k["hizmet"])
+    bag = (f'<a class="fk-bag" href="{ic(hizmet_yolu(h))}">{e(h["ad"])}{svg("ok")}</a>'
+           if h else "")
+    return (
+      f'<article class="fk">'
+      f'<div class="fk-ust"><span class="ikon-yv">{svg(k["ikon"])}</span>'
+      f'<h3>{e(k["ad"])}</h3></div>'
+      f'<p class="fk-aralik">{e(k["aralik"])}</p>'
+      f'<p class="fk-ozet">{e(k["ozet"])}</p>'
+      f'<p class="fk-baslik">Fiyatı değiştirebilecek durumlar</p>'
+      f'<ul class="fk-durum">{durumlar}</ul>{bag}</article>')
+
+def fiyat_tablosu():
+    satir = "".join(f'<tr><td>{e(a)}</td><td>{e(b)}</td></tr>' for a, b in D.FIYAT_TABLO)
+    return ('<div class="tbl"><table><caption class="sr">Tıkanıklık ve gider açma '
+            'işlemlerine göre fiyatlandırma</caption><thead><tr>'
+            '<th scope="col">İşlem / Durum</th><th scope="col">Fiyatlandırma</th>'
+            f'</tr></thead><tbody>{satir}</tbody></table></div>')
+
+def fiyat_sss():
+    """⚠️ Cevaplardaki rakamlar FIYAT_KALEM'den üretiliyor — elle yazılmıyor."""
+    k = {x["hizmet"]: x for x in D.FIYAT_KALEM}
+    tuv = k["tuvalet-tikanikligi-acma"]; lav = k["lavabo-tikanikligi-acma"]
+    ban = k["banyo-gideri-tikanikligi-acma"]
+    return [
+      ("Tıkanıklık açma fiyatları ne kadar?",
+       f"Standart işlerde lavabo ve banyo gideri tıkanıklığı {lav['aralik']}, tuvalet "
+       f"tıkanıklığı {tuv['aralik']} bandında. Bunlar standart tıkanıklıklar için temel "
+       f"aralıklar; kesin ücret, tıkanıklığın yeri ve cinsi görüldükten sonra netleşiyor."),
+      ("Gider açma ücreti neye göre belirleniyor?",
+       "Tıkanıklığın hangi giderde olduğu, hattın ne kadar ilerisinde bulunduğu, tıkanıklığa "
+       "neden olan madde ve kullanılacak müdahale yöntemi belirliyor. Daire içi bir gider ile "
+       "bina ana kolonu aynı iş değil; ikincisi yerinde görülmeden fiyatlanmıyor."),
+      ("Tuvalet tıkanıklığı açma ne kadar?",
+       f"{tuv['aralik']}. Hafif ve yüzeysel tıkanıklıklar bandın alt ucundan başlıyor, zor ve "
+       f"derin tıkanıklıklarda üst uca çıkıyor. Yabancı cisim varsa ya da sorun ana gider "
+       f"hattındaysa durum yerinde değerlendiriliyor."),
+      ("Lavabo ve banyo gideri açma ücreti ne kadar?",
+       f"İkisi de {lav['aralik']} bandında. Lavaboda yağ ve yemek artığı, banyoda saç ve sabun "
+       f"tortusu baskın sebep; tıkanıklığın yoğunluğu arttıkça fiyat bandın üst ucuna "
+       f"yaklaşıyor."),
+      ("Telefonda kesin fiyat öğrenebilir miyim?",
+       "Telefonda size aralığı söylüyoruz. Giderin içinde ne olduğunu ne siz görüyorsunuz ne "
+       "biz; bu yüzden net rakamı ekip yerinde gördükten sonra, işe başlamadan önce "
+       "söylüyor. Onaylamazsanız iş yapılmıyor."),
+      ("Fiyata kameralı kontrol dahil mi?",
+       "Standart bir lavabo veya banyo gideri tıkanıklığında kamera gerekmiyor ve ücreti de "
+       "çıkmıyor. Kamerayı aynı gider tekrar tıkanıyorsa, makineyle açılmıyorsa ya da hattın "
+       "çökmüş olmasından şüpheleniyorsak öneriyoruz; o durumda ayrıca değerlendiriliyor."),
+      ("Fiyatlar İstanbul'un her ilçesinde aynı mı?",
+       "Evet. Yukarıdaki aralıklar 39 ilçenin tamamında geçerli; adres uzak diye fiyat "
+       "yükseltmiyoruz."),
+      ("Fayans veya seramik kırılırsa ek ücret çıkar mı?",
+       "Standart bir tıkanıklıkta kırma gerekmiyor; çalışma mevcut giriş noktalarından "
+       "yapılıyor. Boruda çökme veya kırık varsa önce kamerayla tam noktayı gösteriyor, "
+       "ne yapılacağını ve ücretini anlatıp onayınızı almadan hiçbir yere dokunmuyoruz."),
+    ]
+
+def fiyat_semasi():
+    """⚠️ AggregateOffer sınırları FIYAT_KALEM'den hesaplanıyor; elle yazılan bir
+    lowPrice/highPrice sayfadaki tabloyla sessizce ayrışır."""
+    kalem = D.FIYAT_KALEM
+    teklifler = []
+    for k in kalem:
+        h = HIZMET.get(k["hizmet"])
+        teklifler.append({
+          "@type": "Offer",
+          "name": (h["ad"] if h else k["ad"]),
+          "url": ALAN + "/" + (hizmet_yolu(h) if h else FIYAT_YOL),
+          "priceSpecification": {
+            "@type": "PriceSpecification",
+            "minPrice": k["alt"], "maxPrice": k["ust"],
+            "priceCurrency": D.FIYAT["para"], "valueAddedTaxIncluded": True},
+          "availability": "https://schema.org/InStock",
+          "areaServed": {"@type": "City", "name": "İstanbul"},
+        })
+    return ldj_yaz({
+      "@context": "https://schema.org", "@type": "Service",
+      "name": "Tıkanıklık Açma ve Gider Açma",
+      "serviceType": "Tıkanıklık açma",
+      "description": D.FIYAT["ozet"],
+      "provider": {"@id": ALAN + "/#isletme"},
+      "areaServed": {"@type": "City", "name": "İstanbul"},
+      "url": ALAN + "/" + FIYAT_YOL,
+      "offers": {
+        "@type": "AggregateOffer",
+        "priceCurrency": D.FIYAT["para"],
+        "lowPrice": min(k["alt"] for k in kalem),
+        "highPrice": max(k["ust"] for k in kalem),
+        "offerCount": len(kalem),
+        "offers": teklifler},
+    })
+
+def fiyat_serit():
+    """Anasayfa fiyat şeridi — rakamlar FIYAT_KALEM'den."""
+    ogeler = "".join(
+      f'<a class="fs-k" href="{ic(FIYAT_YOL)}">'
+      f'<span class="ikon-yv">{svg(k["ikon"])}</span>'
+      f'<span class="fs-ad">{e(k["ad"])}</span>'
+      f'<b class="fs-fiyat">{e(k["aralik"])}</b></a>' for k in D.FIYAT_KALEM)
+    return f"""
+<section class="bolum bolum-fiyat"><div class="kap">
+{b_ust("Şeffaf Fiyat", "Tıkanıklık Açma", "Fiyatları",
+       "Standart tıkanıklıklarda uyguladığımız güncel fiyat aralıkları. "
+       "Kapıda sürpriz yok — rakamı baştan görün.")}
+<div class="fs-izgara">{ogeler}</div>
+<p class="fs-alt">Fiyatı değiştiren durumların tamamı, ek unsurlar tablosu ve ücretin nasıl
+belirlendiği için <a href="{ic(FIYAT_YOL)}">tıkanıklık açma ve gider açma fiyatları</a>
+sayfamıza bakın.</p>
+</div></section>"""
+
+def fiyat_cagri(hizmet_slug=None):
+    """Fiyat sayfasına iç link. Hizmetin kendi bandı varsa rakamı da gösterir.
+    ⛔ Rakam elle yazılmaz — FIYAT_KALEM'den okunur."""
+    k = next((x for x in D.FIYAT_KALEM if x["hizmet"] == hizmet_slug), None)
+    if k:
+        return (f'<div class="kutu kutu-fiyat"><p><b>{e(k["ad"])} fiyat aralığı: '
+                f'{e(k["aralik"])}</b><br>{e(k["ozet"])} Fiyatı değiştiren durumların tamamını '
+                f'<a href="{ic(FIYAT_YOL)}">tıkanıklık açma ve gider açma fiyatları</a> '
+                f'sayfamızda listeledik.</p></div>')
+    return (f'<div class="kutu kutu-fiyat"><p><b>Ücreti merak ediyorsanız:</b> standart '
+            f'tuvalet, lavabo ve banyo gideri tıkanıklıkları için güncel aralıkları '
+            f'<a href="{ic(FIYAT_YOL)}">tıkanıklık açma fiyatları</a> sayfamıza yazdık — '
+            f'kesin ücret, tıkanıklık yerinde görüldükten sonra netleşiyor.</p></div>')
+
+def fiyat_sayfasi():
+    F = D.FIYAT
+    sorular = fiyat_sss()
+    kartlar = "".join(fiyat_kart(k) for k in D.FIYAT_KALEM)
+
+    # İç linkleme — kullanıcı özellikle istedi.
+    ilgili_hizmet = ["tikaniklik-acma", "gider-acma", "lavabo-tikanikligi-acma",
+                     "tuvalet-tikanikligi-acma", "banyo-gideri-tikanikligi-acma",
+                     "mutfak-gideri-tikanikligi-acma", "ana-gider-tikanikligi-acma",
+                     "kamerali-tikaniklik-tespiti", "kirmadan-tikaniklik-acma",
+                     "robotla-tikaniklik-acma", "acil-tikaniklik-acma", "pimas-yikama"]
+    hizmet_cip = "".join(
+      f'<li><a class="cip" href="{ic(hizmet_yolu(HIZMET[x]))}">{e(HIZMET[x]["ad"])}</a></li>'
+      for x in ilgili_hizmet)
+    ilce_cip = "".join(
+      f'<li><a class="cip" href="{ic(ilce_yolu(i))}">{e(i["ad"])}</a></li>'
+      for i in sorted(D.ILCELER, key=lambda x: kucuk(x["ad"])))
+
+    govde = (
+      blok_yaz(D.FIYAT_GOVDE_UST)
+      + fiyat_tablosu()
+      + fiyat_gorseli()
+      + blok_yaz(D.FIYAT_GOVDE_ALT)
+      + p(f'Tıkanıklığın hangi hizmete girdiğinden emin değilseniz '
+          f'<a href="{ic(hizmet_yolu(HIZMET["tikaniklik-acma"]))}">tıkanıklık açma</a> ve '
+          f'<a href="{ic(hizmet_yolu(HIZMET["gider-acma"]))}">gider açma</a> sayfalarında '
+          f'hangi işin neyi kapsadığını anlattık. Hattın içini görmek gerekiyorsa '
+          f'<a href="{ic(hizmet_yolu(HIZMET["kamerali-tikaniklik-tespiti"]))}">kameralı '
+          f'tıkanıklık tespiti</a>, bina kolonu söz konusuysa '
+          f'<a href="{ic(hizmet_yolu(HIZMET["ana-gider-tikanikligi-acma"]))}">ana gider '
+          f'tıkanıklığı açma</a> sayfasına bakabilirsiniz.')
+      + p(f'Ücret ödemeden önce denemek isterseniz, hangi ev yönteminin gerçekten işe '
+          f'yaradığını <a href="{ic("lavabo-acma-yontemleri/")}">lavabo ve gider açma '
+          f'yöntemleri</a> rehberimizde tesisatçı gözünden yazdık.')
+      + f'<div class="kutu kutu-uyari"><p><b>Not:</b> {e(F["not"])}</p></div>'
+      + f'<h2>İlgili Hizmetlerimiz</h2><ul class="cipler">{hizmet_cip}</ul>'
+      + f'<h2>Hangi İlçelerde Geçerli?</h2>'
+      + p("Yukarıdaki fiyat aralıkları İstanbul'un 39 ilçesinin tamamında aynı. "
+          "Bulunduğunuz ilçenin sayfasında o bölgedeki yapı stoğunu, hattın karakterini "
+          "ve en sık karşılaştığımız tıkanma sebebini ayrıca anlattık.")
+      + f'<ul class="cipler">{ilce_cip}</ul>')
+
+    yan = (
+      '<aside class="yan">'
+      f'<div class="yan-kutu"><h3>Net fiyat için arayın</h3>'
+      f'<p style="color:var(--gri);font-size:.95rem">{e(D.ONAYLI["ayni_gun"])}. '
+      f'{e(D.ONAYLI["varis"])}.</p>'
+      f'<div style="display:grid;gap:10px">{tel_btn(S["tel_goster"])}{wa_btn()}</div></div>'
+      '<div class="yan-kutu"><h3>Fiyat Özeti</h3><ul class="yan-fiyat">'
+      + "".join(f'<li><span>{e(k["ad"])}</span><b>{e(k["aralik"])}</b></li>'
+                for k in D.FIYAT_KALEM)
+      + '</ul></div>'
+      '<div class="yan-kutu"><h3>Hizmetlerimiz</h3><ul class="yan-liste">'
+      + "".join(f'<li><a href="{ic(hizmet_yolu(HIZMET[x]))}">{e(HIZMET[x]["ad"])}</a></li>'
+                for x in ilgili_hizmet[:8])
+      + f'<li><a href="{ic("hizmetler/")}"><b>Tümü →</b></a></li></ul></div>'
+      '</aside>')
+
+    return (
+      head(f'{F["h1"]} | Güncel Liste — {S["marka"]}',
+           f'{F["ozet"]} Tuvalet {D.FIYAT_KALEM[0]["aralik"]}, lavabo ve banyo gideri '
+           f'{D.FIYAT_KALEM[1]["aralik"]}. İstanbul 39 ilçe, 7/24.',
+           FIYAT_YOL, isletme_semasi() + fiyat_semasi() + sss_semasi(sorular))
+      + ust_header("fiyatlar")
+      + kirinti([(F["ad"], None)])
+      + f"""
+<main id="ana">
+<section class="bolum"><div class="kap">
+<div class="b-ust"><span class="b-etiket">Fiyat Listesi</span>
+<h1>{e(F["h1"])}</h1><p>{e(F["giris"])}</p></div>
+<div class="fk-izgara">{kartlar}</div>
+</div></section>
+{video_bolum(F["slug"])}
+<section class="bolum bolum-ac"><div class="kap"><div class="yan-izgara">
+<article class="govde">{govde}</article>
+{yan}
+</div></div></section>
+{sss_bolum(sorular, "Fiyatlar Hakkında Sık Sorulanlar")}
+{cta_band("Net fiyatı telefonda konuşalım",
+          "Giderin durumunu birkaç soruyla birlikte anlayalım, ekip doğru makineyle yola çıksın.")}
+</main>
+""" + alt_bilgi())
+
 
 # ── Anasayfa ────────────────────────────────────────────────────────────────
 def anasayfa():
@@ -1203,6 +1525,7 @@ def anasayfa():
        "Tıkanıklık açma, gider açma ve kameralı tespit hizmetlerimiz.")}
 <div class="izgara iz-3">{hizmet_kartlari}</div>
 </div></section>
+{fiyat_serit()}
 {video_bolum("")}
 <section class="bolum bolum-ac"><div class="kap">
 {b_ust("Servis Ağımız", "Hizmet", "Bölgelerimiz",
@@ -1300,7 +1623,8 @@ def hizmetler_sayfasi():
       "hizmetlerimiz. İstanbul'un 39 ilçesinde 7/24.",
       "hizmetler/", "Profesyonel Hizmetlerimiz",
       "Tıkanıklık açma ve gider açma hizmetlerimiz kategorilere ayrılmış şekilde listelenmiştir.",
-      f'<div class="izgara iz-3">{kartlar}</div>')
+      f'<div class="izgara iz-3">{kartlar}</div>'
+      + fiyat_serit())
 
 def hakkimizda_sayfasi():
     govde = '<div class="govde">' + "".join([
@@ -1435,6 +1759,7 @@ def main():
     for i in D.ILCELER:
         is_listesi.append((ilce_yolu(i), (lambda x: lambda: ilce_sayfasi(x))(i), "0.8"))
     is_listesi += [
+      (FIYAT_YOL, fiyat_sayfasi, "0.9"),
       ("hizmetler/", hizmetler_sayfasi, "0.7"),
       ("bolgeler/", bolgeler_sayfasi, "0.7"),
       ("hakkimizda/", hakkimizda_sayfasi, "0.6"),

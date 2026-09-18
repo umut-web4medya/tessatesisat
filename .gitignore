@@ -1,3 +1,5 @@
 _src/__pycache__/
-_src/*.yedek-*
 *.pyc
+# ⚠️ Yedek kopyalar depoya girmesin: GitHub Pages onları da yayınlıyor ve
+#    eski CSS/JS herkese açık kalıyor.
+*.yedek-*

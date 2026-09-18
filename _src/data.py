@@ -623,27 +623,212 @@ ANA_ANCHOR = [
 ]
 
 
+# ── Fiyat listesi ───────────────────────────────────────────────────────────
+# ⚠️ TEK KAYNAK: fiyat değişince SADECE burası düzenlenir; sayfa, şema, kartlar
+#    ve SSS hepsi buradan üretilir. ⛔ HTML'e elle rakam yazma.
+# ✅ Rakamlar kullanıcının 2026-09-18'de bizzat verdiği gerçek fiyat listesi.
+#    ⛔ Buraya UYDURMA kalem/rakam ekleme — "yerinde tespit" diyen satırlar
+#    bilerek rakamsız; olmayan bir fiyatı yazmak Ticari Reklam Yönetmeliği'nde
+#    yanıltıcı ticari uygulama sayılır.
+# ⚠️ Hedef kelimeler (kullanıcı verdi): tıkanıklık açma fiyatları · gider açma
+#    fiyatları · tıkanıklık açma ücreti · gider açma ücreti. Dördü de TEK
+#    sayfada toplanıyor — ayrı "ücret" sayfası açmak kannibalizasyon olurdu.
+FIYAT = {
+    "slug":  "tikaniklik-acma-fiyatlari",
+    "ad":    "Tıkanıklık Açma Fiyatları",
+    "h1":    "Tıkanıklık Açma ve Gider Açma Fiyatları",
+    "ozet":  "Tuvalet, lavabo ve banyo gideri tıkanıklıklarında güncel fiyat aralıklarımız, "
+             "fiyatı değiştiren durumlar ve ücretin nasıl belirlendiği.",
+    "giris": "Tessa Tesisat'ta gider açma hizmetlerinde fiyatlandırma, tıkanıklığın bulunduğu "
+             "bölgeye, tıkanıklığın seviyesine ve kullanılacak ekipmana göre belirlenmektedir. "
+             "Aşağıdaki fiyatlar standart tıkanıklıklar için temel fiyat aralıklarını "
+             "göstermektedir.",
+    "not":   "Fiyatlar hizmetin kapsamına ve tıkanıklığın durumuna göre değişebilir. Kesin "
+             "ücret, gerekli müdahale belirlendikten sonra netleştirilir.",
+    "para":  "TRY",
+}
+FIYAT_SLUG_YER = FIYAT["slug"]
+
+# Kalemler — kart olarak basılır. "hizmet": ilgili hizmet sayfasının slug'ı (iç link).
+FIYAT_KALEM = [
+ {"ad":"Tuvalet Tıkanıklığı", "ikon":"tuvalet", "hizmet":"tuvalet-tikanikligi-acma",
+  "aralik":"2.500 TL – 3.000 TL", "alt":2500, "ust":3000,
+  "ozet":"Standart tuvalet gideri tıkanıklıklarının açılması için uygulanan fiyat aralığıdır.",
+  "durum":[
+    ("Hafif ve yüzeysel tıkanıklık",   "2.500 TL'den başlayan fiyatlarla"),
+    ("Orta seviyeli tıkanıklık",       "2.750 TL civarı"),
+    ("Zor ve derin tıkanıklık",        "3.000 TL'ye kadar"),
+    ("Yabancı cisim kaynaklı tıkanıklık", "Tıkanıklığın durumuna göre fiyatlandırılır"),
+    ("Ana gider hattı problemi",       "Yerinde tespit sonrası ayrıca fiyatlandırılır"),
+    ("Kamera ile gider kontrolü",      "İhtiyaç halinde ayrıca değerlendirilir"),
+  ]},
+
+ {"ad":"Lavabo Tıkanıklığı", "ikon":"lavabo", "hizmet":"lavabo-tikanikligi-acma",
+  "aralik":"2.000 TL – 2.500 TL", "alt":2000, "ust":2500,
+  "ozet":"Mutfak ve lavabo giderlerinde oluşan standart tıkanıklıklar için temel fiyat aralığıdır.",
+  "durum":[
+    ("Hafif lavabo tıkanıklığı",       "2.000 TL'den başlayan fiyatlarla"),
+    ("Orta seviyeli tıkanıklık",       "2.250 TL civarı"),
+    ("Yoğun veya derin tıkanıklık",    "2.500 TL'ye kadar"),
+    ("Yağ ve yemek artığı kaynaklı tıkanıklık", "Tıkanıklığın seviyesine göre"),
+    ("Sifon ve gider bağlantısı problemi", "Yerinde kontrol sonrası belirlenir"),
+    ("Ana gider hattı tıkanıklığı",    "Ayrı değerlendirme yapılır"),
+    ("Kamera ile tesisat kontrolü",    "Gerektiğinde ayrıca fiyatlandırılır"),
+  ]},
+
+ {"ad":"Banyo Gideri Tıkanıklığı", "ikon":"banyo", "hizmet":"banyo-gideri-tikanikligi-acma",
+  "aralik":"2.000 TL – 2.500 TL", "alt":2000, "ust":2500,
+  "ozet":"Banyo, duş ve zemin giderlerinde oluşan standart tıkanıklıklar için uygulanabilecek "
+         "fiyat aralığıdır.",
+  "durum":[
+    ("Hafif saç ve kıl birikmesi",     "2.000 TL'den başlayan fiyatlarla"),
+    ("Orta seviyeli gider tıkanıklığı","2.250 TL civarı"),
+    ("Derin ve yoğun tıkanıklık",      "2.500 TL'ye kadar"),
+    ("Sabun ve tortu birikmesi",       "Tıkanıklığın durumuna göre"),
+    ("Gider borusunun derin bölümündeki tıkanıklık", "Yerinde kontrol edilir"),
+    ("Ana gider hattı tıkanıklığı",    "Ayrı fiyatlandırılır"),
+    ("Kamera ile gider görüntüleme",   "İhtiyaç halinde ayrıca değerlendirilir"),
+  ]},
+]
+
+# "Fiyatı Belirleyen Ek Unsurlar" tablosu — (işlem/durum, fiyatlandırma)
+FIYAT_TABLO = [
+ ("Standart lavabo tıkanıklığı",          "2.000 – 2.500 TL"),
+ ("Standart banyo gideri tıkanıklığı",    "2.000 – 2.500 TL"),
+ ("Standart tuvalet tıkanıklığı",         "2.500 – 3.000 TL"),
+ ("Derin gider tıkanıklığı",              "Ana fiyat aralığı içinde / durumuna göre"),
+ ("Yoğun yağ ve tortu birikmesi",         "Ana fiyat aralığı içinde / durumuna göre"),
+ ("Yabancı cisim kaynaklı tıkanıklık",    "Yerinde tespit"),
+ ("Ana gider hattı tıkanıklığı",          "Yerinde tespit"),
+ ("Kamera ile tesisat görüntüleme",       "İhtiyaç halinde ayrıca fiyatlandırılır"),
+ ("Tesisat kaynaklı yapısal problem",     "Tespit sonrası ayrıca fiyatlandırılır"),
+]
+
+
+# Fiyat sayfası gövdesi.
+# ⚠️ Kullanıcının verdiği metin AYNEN korundu (giriş, "Fiyatlandırma Nasıl
+#    Yapılır?", not). Etrafındaki bölümler kullanıcının ağzından ghostwrite —
+#    kullanıcı "içerikler zengin olmalı" dedi.
+# ⛔ Bu bölümlerde YENİ RAKAM YOK. Fiyat yalnızca FIYAT_KALEM / FIYAT_TABLO'dan
+#    gelir; anlatıma rakam sızdırmak ikinci bir "fiyat kaynağı" yaratır.
+FIYAT_GOVDE_UST = [
+ ("h2","Fiyatı Belirleyen Ek Unsurlar"),
+ ("p","Bazı tıkanıklıklarda standart gider açma işleminin dışında ek işlem veya ekipman "
+      "gerekebilir. Bu nedenle kesin fiyat, tıkanıklığın durumuna göre belirlenir."),
+]
+
+FIYAT_GOVDE_ALT = [
+ ("h2","Fiyatlandırma Nasıl Yapılır?"),
+ ("p","Tessa Tesisat'ta fiyat belirlenirken öncelikle tıkanıklığın hangi giderde olduğu, "
+      "ne kadar ileride bulunduğu, tıkanıklığa neden olan madde ve kullanılacak müdahale "
+      "yöntemi değerlendirilir."),
+ ("p","Standart tıkanıklıklarda fiyatlar yukarıdaki aralıklar içerisindedir. Daha kapsamlı bir "
+      "işlem gerektiğinde, yapılacak ek işlem ve varsa ekipman kullanımı müşteriye belirtilerek "
+      "fiyatlandırma yapılır."),
+
+ ("h2","Tıkanıklık Açma Ücreti Neye Göre Değişiyor?"),
+ ("p","Aynı işe iki farklı ücret çıkmasının sebebi keyfîlik değil; giderin kendisi. Fiyatı "
+      "yukarı ya da aşağı çeken şeyler pratikte şunlar:"),
+ ("ul",[
+   ("Tıkanıklığın yeri","Sifonun hemen altındaki bir tıkaçla, kolona bağlanan noktadaki tıkaç "
+    "aynı iş değil. Hat uzadıkça makine değişiyor, süre uzuyor."),
+   ("Tıkanıklığın cinsi","Saç ve sabun tortusu mekanik olarak kolay çıkar. Donmuş yağ, kireç "
+    "kabuğu, inşaat harcı veya kök sarması aynı kolaylıkta çıkmaz."),
+   ("Kullanılan ekipman","Elde açılan bir gider ile çelik yaylı robot makine ya da yüksek "
+    "basınçlı yıkama gereken bir hat arasında fark var."),
+   ("Erişim noktası","Temizleme kapağı açıktaysa iş kısa sürer. Kapak yoksa, dolabın içinden "
+    "ya da rögardan çalışmak gerekiyorsa süre uzar."),
+   ("Daire içi mi, bina hattı mı","Fiyatı en çok değiştiren ayrım bu. Aşağıda ayrı başlık "
+    "altında anlattık."),
+ ]),
+
+ ("h2","Telefonda Neden Kesin Rakam Söylemiyoruz?"),
+ ("p","Söyleyebilseydik söylerdik. Ama telefonda duyduğumuz şey çoğu zaman \u201clavabo "
+      "gitmiyor\u201d oluyor; giderin içinde ne olduğunu ne siz görüyorsunuz ne biz. "
+      "Sahada aynı cümleyle gittiğimiz iki adresten birinde iş on beş dakikada bitiyor, "
+      "diğerinde kolonda kireç kabuğu çıkıyor."),
+ ("p","Bu yüzden telefonda size <b>aralık</b> söylüyoruz: yukarıdaki tablo, standart bir işin "
+      "hangi bandın içinde kalacağını baştan gösteriyor. Ekip yerinde gördükten sonra, işe "
+      "başlamadan önce net rakamı söylüyor. Onaylamazsanız iş yapılmıyor."),
+ ("uyari","<b>Şuna dikkat edin:</b> telefonda tereddütsüz \u201cçok ucuz\u201d bir rakam "
+          "veren kimse o rakamı görmüyor. Kapıya gelince \u201cbu başka iş\u201d denip "
+          "fiyat katlanıyor. Biz de kapıda sürpriz sevmediğimiz için aralığı buraya, "
+          "herkesin görebileceği bir sayfaya yazdık."),
+
+ ("h2","Gider Açma Ücretinde Nelere Dikkat Etmelisiniz?"),
+ ("ul",[
+   ("Fiyat işe başlamadan konuşulsun","Makine gidere girdikten sonra pazarlık yapılmaz. "
+    "Net rakamı duymadan onay vermeyin — bu bizim için de geçerli."),
+   ("Neyin dahil olduğu net olsun","Açma işlemi mi, kamerayla kontrol mü, ikisi birden mi? "
+    "Kamera her işte gerekmiyor; gerekmediği yerde ücret de çıkmamalı."),
+   ("Kırma konusu baştan sorulsun","Standart bir tıkanıklıkta fayans kırılması gerekmiyor. "
+    "Kırma teklif eden biri varsa önce sebebini kamerayla göstermesini isteyin."),
+   ("Tekrarlayan tıkanıklıkta ısrar etmeyin","Aynı gider kısa aralıklarla tekrar tıkanıyorsa "
+    "sorun tıkaçta değil hattın kendisinde. Üst üste açtırmak, bir kez doğru teşhisten "
+    "pahalıya geliyor."),
+ ]),
+
+ ("h2","Daire İçi Tıkanıklık mı, Bina Ana Gideri mi?"),
+ ("p","Fiyatı en çok değiştiren ayrım bu. Tek bir gider yavaşladıysa iş büyük ihtimalle o "
+      "giderin kendi hattında; yukarıdaki standart aralıklar geçerli. Evdeki birkaç gider "
+      "aynı anda taşıyorsa ya da alt kattaki komşuda da aynı sorun varsa bina kolonundan "
+      "şüpheleniyoruz; orası ayrı bir iş ve yerinde görülmeden fiyatlanmıyor."),
+ ("p","Bina hattı söz konusuysa masrafın ortak alana mı daireye mi ait olduğu da ayrı bir "
+      "konu. Sokaktaki ana kanalizasyon şebekesi ise zaten İSKİ'nin işi — parsel içi ile "
+      "sokak arasındaki sınırı ilçe sayfalarımızda tablo hâlinde anlattık."),
+
+ ("h2","Kamera Her İşte Gerekiyor mu?"),
+ ("p","Hayır. Standart bir lavabo ya da banyo gideri tıkanıklığında kamera gerekmiyor; iş "
+      "açılır, biter. Kamerayı şu üç durumda öneriyoruz: aynı gider kısa sürede tekrar "
+      "tıkanıyorsa, tıkanıklık makineyle açılmıyorsa, ya da hattın çökmüş/kırılmış olduğundan "
+      "şüpheleniyorsak."),
+ ("p","Kamera gerekmeyen bir işte kamera ücreti çıkarmıyoruz. Gerektiğinde de neden "
+      "gerektiğini ekranda birlikte görüyorsunuz."),
+
+ ("h2","Fiyatlar İlçeye Göre Değişiyor mu?"),
+ ("p","Hayır. Yukarıdaki aralıklar İstanbul'un 39 ilçesinin tamamında aynı. Adres uzak diye "
+      "fiyat yükseltmiyoruz; ekip hangi ilçeye giderse gitsin standart iş standart bandın "
+      "içinde kalıyor."),
+
+ ("h2","Ev Yöntemlerini Denemek Ücreti Düşürür mü?"),
+ ("p","Gider sadece <b>yavaşladıysa</b> denemeye değer — bazı yöntemlerin gerçekten bir "
+      "etkisi var ve iş bize hiç düşmeyebilir. Ama su hiç gitmiyorsa ya da geri geliyorsa "
+      "tıkaç oturmuş demektir; o aşamada dökülen kimyasal tıkanıklığı çıkarmıyor, sadece "
+      "hattın içinde bekliyor ve biz geldiğimizde işi zorlaştırıyor."),
+]
+
 # ── Videolar ────────────────────────────────────────────────────────────────
-# Kullanıcı 2026-09-18'de dosya adlarını verdi. Dosyalar `videos/` klasörüne
-# konunca otomatik devreye girer; yoksa bölüm HİÇ basılmaz (boş kutu çıkmaz).
-# ⚠️ Poster görseli `videos/<ad>.jpg` olarak ffmpeg ile üretilir (media.py) —
-#    postersiz <video> mobilde ilk karede boş siyah kutu gösteriyor.
+# ⚠️ Kullanıcı 2026-09-18'de 4 dosya yükledi. 5. dosya (tikaniklik-acma.mp4)
+#    GELMEDİ — o kayıt listeden çıkarıldı, yoksa anasayfa videosuz kalıyordu.
+# ⚠️ Videolar DİKEY (9:16 reels, 464×832 / 576×1024) — yatay 16/10 kutuda
+#    kırpılıyorlardı. Bölüm dikey şerit olarak kuruldu.
+# ⚠️ Başlık/alt metinler videonun GERÇEK karesinden yazıldı; poster
+#    `videos/<ad>.jpg` olarak media.py üretir (postersiz <video> mobilde
+#    siyah kutu gösteriyor).
 VIDEOLAR = [
- {"dosya":"tikaniklik-acma",          "baslik":"Tıkanıklık açma çalışmamız",
-  "alt":"Robotlu tıkanıklık açma makinesiyle gider hattına müdahale",
-  "sayfa":["", "tikaniklik-acma"]},
- {"dosya":"gider-acma",               "baslik":"Gider açma çalışmamız",
-  "alt":"Tıkalı gider hattının basınçlı yöntemle açılması",
-  "sayfa":["gider-acma"]},
- {"dosya":"lavabo-gideri-acma",       "baslik":"Lavabo gideri açma",
-  "alt":"Lavabo gideri tıkanıklığının sifon sökülmeden açılması",
-  "sayfa":["lavabo-tikanikligi-acma"]},
- {"dosya":"tuvalet-tikanikligi-acma", "baslik":"Tuvalet tıkanıklığı açma",
-  "alt":"Klozet ve tuvalet giderinin çelik yaylı robotla açılması",
-  "sayfa":["tuvalet-tikanikligi-acma"]},
- {"dosya":"tikali-gider-acma",        "baslik":"Tıkalı gider açma",
-  "alt":"Tıkalı gider hattında robot makineyle tıkanıklığın parçalanması",
-  "sayfa":["gider-acma", "ana-gider-tikanikligi-acma"]},
+ {"dosya":"gider-acma",
+  "baslik":"Yer süzgeci gideri açılırken",
+  "alt":"Tıkalı yer süzgeci giderine spiral makine ve çelik yayla müdahale",
+  "sayfa":["", "gider-acma", "banyo-gideri-tikanikligi-acma", "robotla-tikaniklik-acma",
+           "acil-tikaniklik-acma", FIYAT_SLUG_YER]},
+
+ {"dosya":"lavabo-gideri-acma",
+  "baslik":"Mutfak lavabosu gideri açılırken",
+  "alt":"Mutfak dolabının altındaki gider ağzından basınçlı hortumla çalışma",
+  "sayfa":["", "lavabo-tikanikligi-acma", "mutfak-gideri-tikanikligi-acma",
+           "kirmadan-tikaniklik-acma", "lavabo-acma-yontemleri", FIYAT_SLUG_YER]},
+
+ {"dosya":"tikali-gider-acma",
+  "baslik":"Tıkalı giderden çıkan tortu",
+  "alt":"Gider borusu sökülüp hattaki tortulu suyun kovaya alınması",
+  "sayfa":["", "tikaniklik-acma", "ana-gider-tikanikligi-acma", "pimas-yikama",
+           "kanalizasyon-acma", FIYAT_SLUG_YER]},
+
+ {"dosya":"tuvalet-tikanikligi-acma",
+  "baslik":"Banyo giderinden çıkan saç kütlesi",
+  "alt":"Banyo ve tuvalet giderinden çıkarılan saç ve tortu birikintisi",
+  "sayfa":["tuvalet-tikanikligi-acma", "banyo-gideri-tikanikligi-acma",
+           "kamerali-tikaniklik-tespiti", FIYAT_SLUG_YER]},
 ]
 
 # ── Sık sorulan sorular ─────────────────────────────────────────────────────
