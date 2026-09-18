@@ -25,8 +25,8 @@
   --mavi-koyu:#0A56A8;
   --yesil:#22B573;
   --yesil-koyu:#189B60;
-  --acil:#FF6A1A;          /* YALNIZ acil çağrı eylemi — başka yerde kullanma */
-  --acil-koyu:#EF4E0C;
+  /* ⛔ Turuncu vurgu (--acil) KALDIRILDI: kullanıcı "Hemen Ara butonu mavi
+     olmalıydı" dedi. Palet marka mavisi + WhatsApp yeşiliyle sınırlı. */
 
   /* ── Koyu yüzeyler ───────────────────────────────────────────────────── */
   --koyu:#04203F;
@@ -301,7 +301,7 @@ small{font-size:.86em}
   box-shadow:0 34px 70px -18px rgba(0,0,0,.66),0 0 0 1px rgba(79,180,238,.5)}
 .hero-ara:hover img{transform:scale(1.035)}
 .hero-ara-rozet{display:flex;align-items:center;gap:14px;padding:15px 20px;
-  background:linear-gradient(130deg,var(--acil),var(--acil-koyu));color:#fff}
+  background:linear-gradient(130deg,var(--mavi),var(--mavi-koyu));color:#fff}
 .hero-ara-rozet svg{width:22px;height:22px;animation:calan 2.4s ease-in-out infinite}
 .hero-ara-yz{min-width:0}
 .hero-ara-rozet b{display:block;font-size:1.04rem;font-weight:800;
@@ -544,7 +544,7 @@ small{font-size:.86em}
   color:#fff;padding:clamp(34px,4.4vw,56px);text-align:center}
 .cta::before{content:"";position:absolute;inset:0;z-index:-1;
   background:radial-gradient(60% 110% at 50% 0%,rgba(7,150,223,.4),transparent 64%),
-             radial-gradient(40% 80% at 90% 100%,rgba(255,106,26,.16),transparent 70%)}
+             radial-gradient(40% 80% at 90% 100%,rgba(10,86,168,.35),transparent 70%)}
 .cta h2{color:#fff;margin-bottom:.5em}
 .cta p{color:#B3C9DD;max-width:62ch;margin:0 auto 28px}
 .cta-dg{display:flex;flex-wrap:wrap;gap:13px;justify-content:center}
@@ -689,17 +689,22 @@ small{font-size:.86em}
   transition:transform var(--gecis),box-shadow var(--gecis),filter var(--gecis)}
 .d-dg:hover{transform:translateY(-3px) scale(1.02);filter:brightness(1.07)}
 .d-dg:active{transform:translateY(0) scale(.99)}
-.d-ara{background:linear-gradient(135deg,var(--acil),var(--acil-koyu))}
+/* ⚠️ Kullanıcı turuncuyu reddetti: 'Hemen Ara butonu da mavi olmalıydı'.
+   Marka mavisi kullanılıyor. ⛔ turuncuya geri döndürme. */
+.d-ara{background:linear-gradient(135deg,var(--mavi),var(--mavi-koyu))}
 .d-wa{background:linear-gradient(135deg,#2ACB80,var(--yesil-koyu))}
 .d-yv{position:relative;width:44px;height:44px;border-radius:50%;flex:0 0 auto;
   display:grid;place-items:center;background:rgba(255,255,255,.2);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
 .d-yv svg{width:21px;height:21px;color:#fff}
-/* nabız halkası — düğmenin kendisinden yayılıyor */
-.d-dg::before,.d-dg::after{content:"";position:absolute;left:11px;top:50%;
-  width:44px;height:44px;margin-top:-22px;border-radius:50%;pointer-events:none;
-  border:2px solid rgba(255,255,255,.65);animation:nabiz 2.6s ease-out infinite}
-.d-dg::after{animation-delay:1.3s}
+/* ⚠️ Nabız halkası ÖNCE .d-dg'ye sabit left:11px ile bağlıydı; mobilde düğme
+   genişleyip içerik ortalanınca ikon ortaya kayıyor, halka solda kalıyordu
+   (kullanıcı telefonda gördü). Artık halka İKONUN KENDİSİNDEN yayılıyor,
+   yerleşim ne olursa olsun hizalı. ⛔ .d-dg'ye geri taşıma. */
+.d-yv::before,.d-yv::after{content:"";position:absolute;inset:0;border-radius:50%;
+  pointer-events:none;border:2px solid rgba(255,255,255,.7);
+  animation:nabiz 2.6s ease-out infinite}
+.d-yv::after{animation-delay:1.3s}
 @keyframes nabiz{0%{transform:scale(.86);opacity:.8}
                  100%{transform:scale(1.75);opacity:0}}
 .d-ara .d-yv svg{animation:calan 2.4s ease-in-out infinite}
@@ -732,6 +737,10 @@ small{font-size:.86em}
 @media (max-width:980px){
   .menu,.ust-sag .tel-kart{display:none}
   .mnu-ac{display:grid}
+  /* ⚠️ .ust-sag'ı sağa iten şey .menu'nün margin-left:auto'suydu; menü
+     display:none olunca itme kayboluyor ve WhatsApp+hamburger logonun hemen
+     yanında, ortada kalıyordu (kullanıcı telefonda gördü). ⛔ Silme. */
+  .ust-sag{margin-left:auto}
   /* Mobil menü paneli — üst başlığın altına açılır.
      ⚠️ .ust'te backdrop-filter var; panel ONUN İÇİNDE kalırsa yeni yığın
         bağlamı yüzünden linkler tıklanamıyordu. Panel .ust-ic'e göre
@@ -778,7 +787,6 @@ small{font-size:.86em}
     min-width:0}
   .d-yv{width:38px;height:38px}
   .d-yv svg{width:18px;height:18px}
-  .d-dg::before,.d-dg::after{width:38px;height:38px;margin-top:-19px;left:10px}
   .d-yz b{font-size:.92rem}
   .d-yz small{font-size:.72rem;overflow:hidden;text-overflow:ellipsis}
   /* ⚠️ Sabit çubuk imzayı örtmesin diye alt pay imza bandına taşındı */
