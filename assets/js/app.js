@@ -155,3 +155,39 @@
   }, 6000);
   tazele();
 })();
+
+/* ── Google Ads dönüşüm ölçümü ─────────────────────────────────────────
+   window.TESSA_ADS yalnızca data.ADS["etiket"] doluysa sayfaya basılır.
+   gtag.js "load" olayından SONRA iner → ilk açılışta üçüncü parti istek yok.
+   Tıklama gtag inmeden olursa olay dataLayer kuyruğunda bekler (tel: ve
+   wa.me yeni sekme sayfayı kapatmaz, kuyruk kaybolmaz). */
+(function () {
+  "use strict";
+  var A = window.TESSA_ADS;
+  if (!A || !A.etiket) return;
+
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { window.dataLayer.push(arguments); };
+  gtag("js", new Date());
+  gtag("config", A.etiket);
+
+  function yukle() {
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(A.etiket);
+    document.head.appendChild(s);
+  }
+  if (document.readyState === "complete") yukle();
+  else window.addEventListener("load", yukle, { once: true });
+
+  /* Tek dinleyici: 62 sayfadaki tüm Ara / WhatsApp düğmelerini kapsar */
+  document.addEventListener("click", function (o) {
+    var a = o.target.closest && o.target.closest("a[href]");
+    if (!a) return;
+    var h = a.getAttribute("href") || "";
+    var hedef = h.indexOf("tel:") === 0 ? A.tel
+              : (h.indexOf("wa.me/") > -1 || h.indexOf("api.whatsapp.com") > -1) ? A.wa
+              : "";
+    if (hedef) gtag("event", "conversion", { send_to: hedef, transport_type: "beacon" });
+  }, true);
+})();

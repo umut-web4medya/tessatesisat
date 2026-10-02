@@ -429,7 +429,7 @@ Tıkanıklığın yerini kamerayla bulup sebebini ortadan kaldırıyoruz — İs
 {w4_imza()}
 </footer>
 {dock()}
-<script src="{ic(surum("assets/js/app.js"))}" defer></script>
+{ads_ayar()}<script src="{ic(surum("assets/js/app.js"))}" defer></script>
 </body>
 </html>
 """
@@ -1735,6 +1735,22 @@ def yaz(yol, icerik):
         f.write(icerik)
     return len(icerik.encode("utf-8"))
 
+def ads_ayar():
+    """Google Ads dönüşüm ayarı → app.js okur. Etiket boşsa boş metin (kod basılmaz)."""
+    a = getattr(D, "ADS", {}) or {}
+    if not a.get("etiket"):
+        return ""
+    return ("<script>window.TESSA_ADS=" +
+            json.dumps({k: a.get(k, "") for k in ("etiket", "tel", "wa")}) +
+            ";</script>\n")
+
+
+GIZ_OLCUM = ("Reklamlarımızın sonuç verip vermediğini ölçmek için Google Ads dönüşüm etiketi "
+             "kullanılmaktadır. Bu etiket, bir Google reklamına tıklayarak gelen ziyaretçinin "
+             "telefon veya WhatsApp düğmesine tıklayıp tıklamadığını Google'a bildirir ve bunun "
+             "için çerez kullanır. Formda veya başka bir yolla kişisel bilgi toplanmaz. ")
+
+
 def sayfa_yaz(yol, uretici):
     """yol: '' (anasayfa) / 'bolgeler/' / '404.html'"""
     global ONEK
@@ -1768,14 +1784,17 @@ def main():
         "Gizlilik Politikası", [
         "Bu sitede ziyaretçilerden kişisel veri toplayan bir form bulunmamaktadır. "
         "İletişim yalnızca telefon, WhatsApp ve e-posta üzerinden kurulmaktadır.",
-        "Site üzerinde üçüncü taraf reklam veya takip çerezi çalıştırılmamaktadır. "
+        (GIZ_OLCUM if D.ADS.get("etiket") else
+         "Site üzerinde üçüncü taraf reklam veya takip çerezi çalıştırılmamaktadır. ") +
         "Google Haritalar bileşeni yalnızca siz haritaya tıkladığınızda yüklenir; "
         "tıklamadığınız sürece Google'a herhangi bir istek gönderilmez.",
         "Telefon veya WhatsApp ile bize ulaştığınızda paylaştığınız bilgiler yalnızca "
         "talep ettiğiniz hizmetin yerine getirilmesi amacıyla kullanılır, üçüncü kişilerle "
         "paylaşılmaz.",
         f"Sorularınız için: <a href=\"mailto:{S['eposta']}\">{S['eposta']}</a>"],
-        "Bu sitede form yok, üçüncü taraf takip çerezi çalışmıyor. Google Haritalar yalnızca "
+        ("Bu sitede form yok; reklam ölçümü için yalnızca Google Ads dönüşüm etiketi çalışıyor. "
+         if D.ADS.get("etiket") else
+         "Bu sitede form yok, üçüncü taraf takip çerezi çalışmıyor. ") + "Google Haritalar yalnızca "
         "siz tıklayınca yükleniyor. Kişisel veri işleme yaklaşımımız."), "0.3"),
       ("kullanim-sartlari/", lambda: metin_sayfasi("kullanim-sartlari",
         "Kullanım Şartları", [

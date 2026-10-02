@@ -35,6 +35,16 @@ SITE = {
     "boylam":     28.878719,
 }
 
+# Google Ads dönüşüm ölçümü (2026-10-02, harita reklamı kurulumu)
+#   "etiket" boşken siteye HİÇBİR kod basılmaz (çıktı eskisiyle birebir aynı kalır).
+#   "tel" / "wa" = Ads'teki dönüşüm snippet'inin send_to değeri: "AW-123456789/AbCdEf".
+#   Etiket sayfa yüklendikten SONRA iner (app.js) — ilk açılışta üçüncü parti istek yok.
+ADS = {
+    "etiket": "AW-18406769336",
+    "tel":    "",
+    "wa":     "",
+}
+
 # ⏳ TEYİT BEKLİYOR — kullanıcı onaylayana kadar sitede KULLANILMAZ.
 #    (denetim.py bu listedeki bir ifadeyi HTML'de bulursa uyarı basar)
 TEYITSIZ = [
