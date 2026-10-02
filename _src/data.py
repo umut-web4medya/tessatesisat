@@ -42,7 +42,7 @@ SITE = {
 ADS = {
     "etiket": "AW-18406769336",
     "tel":    "AW-18406769336/JXoPCMOL-40dELiFhMlE",
-    "wa":     "",
+    "wa":     "AW-18406769336/yx77COLx_o0dELiFhMlE",
 }
 
 # ⏳ TEYİT BEKLİYOR — kullanıcı onaylayana kadar sitede KULLANILMAZ.
