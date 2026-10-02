@@ -41,7 +41,7 @@ SITE = {
 #   Etiket sayfa yüklendikten SONRA iner (app.js) — ilk açılışta üçüncü parti istek yok.
 ADS = {
     "etiket": "AW-18406769336",
-    "tel":    "",
+    "tel":    "AW-18406769336/JXoPCMOL-40dELiFhMlE",
     "wa":     "",
 }
 
