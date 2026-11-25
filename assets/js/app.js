@@ -15,6 +15,24 @@
     });
   }
 
+  /* ── Kullanıcı giriş kutusu ─────────────────────────────────────────── */
+  var kul = document.getElementById("kul-giris");
+  if (kul && kul.showModal) {
+    document.querySelectorAll("[data-kul-ac]").forEach(function (d) {
+      d.addEventListener("click", function () {
+        if (menu && menu.classList.contains("acik")) {
+          menu.classList.remove("acik");
+          document.documentElement.style.overflow = "";
+          if (ac) ac.setAttribute("aria-expanded", "false");
+        }
+        kul.showModal();
+      });
+    });
+    kul.addEventListener("click", function (o) {
+      if (o.target === kul || o.target.hasAttribute("data-kul-kapat")) kul.close();
+    });
+  }
+
   /* ── Hizmetler açılır listesi ───────────────────────────────────────── */
   document.querySelectorAll(".acilir").forEach(function (k) {
     var dg = k.querySelector("button");

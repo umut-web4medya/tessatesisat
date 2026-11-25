@@ -204,6 +204,23 @@ small{font-size:.86em}
   transition:background var(--gecis),color var(--gecis)}
 .menu a:hover{background:var(--zemin-2);color:var(--lacivert)}
 .menu a[aria-current]{color:var(--mavi);background:var(--zemin-2)}
+/* Yalnız açılır (mobil) menüde görünür: masaüstü çubuğunda yer yok, 1200px altında yatay taşırıyordu. */
+.mn-kul{display:none;padding:10px 14px;border:0;background:none;font:inherit;font-weight:650;
+  font-variation-settings:"wght" 650;font-size:.98rem;color:var(--metin-2);border-radius:10px;
+  cursor:pointer;text-align:left;transition:background var(--gecis),color var(--gecis)}
+.mn-kul:hover{background:var(--zemin-2);color:var(--lacivert)}
+/* Kullanıcı giriş kutusu — <dialog> üst katmanda açılır, başlığın yığın bağlamından etkilenmez */
+.kul{width:min(380px,calc(100vw - 32px));padding:0;border:1px solid var(--cizgi);border-radius:16px;
+  background:#fff;color:var(--metin);box-shadow:var(--golge-2)}
+.kul::backdrop{background:rgba(5,25,50,.55)}
+.kul form{display:grid;gap:14px;padding:22px}
+.kul h2{font-size:1.2rem;margin:0;color:var(--lacivert)}
+.kul label{display:grid;gap:6px;font-size:.92rem;font-weight:650;color:var(--metin-2)}
+.kul input{font:inherit;font-size:1rem;padding:12px 13px;border:1px solid var(--cizgi-2);
+  border-radius:10px;background:#fff;color:var(--metin);width:100%;min-width:0}
+.kul input:focus-visible{outline:2px solid var(--mavi);outline-offset:1px}
+.kul .dg{font-family:inherit}
+.kul-dg{display:flex;gap:10px;justify-content:flex-end;margin-top:4px}
 .acilir{position:relative}
 .acilir>button{display:inline-flex;align-items:center;gap:7px;padding:10px 14px;border:0;
   background:none;font:inherit;font-weight:650;font-size:.98rem;color:var(--metin-2);
@@ -752,6 +769,7 @@ small{font-size:.86em}
     border-bottom:1px solid var(--cizgi);box-shadow:var(--golge-2);
     padding:12px 17px 20px;max-height:calc(100dvh - var(--ust-h));overflow:auto;margin:0}
   .menu.acik a{padding:13px 13px;font-size:1.04rem;border-radius:11px}
+  .menu.acik .mn-kul{display:block;padding:13px;font-size:1.04rem;border-radius:11px;width:100%}
   .menu.acik .acilir{width:100%}
   .menu.acik .acilir>button{width:100%;justify-content:space-between;padding:13px;
     font-size:1.04rem}

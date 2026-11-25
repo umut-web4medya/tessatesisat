@@ -334,6 +334,7 @@ def ust_header(aktif=""):
 {bag(*son[0])}
 {bag(*son[1])}
 {bag(*son[2])}
+<button class="mn-kul" type="button" data-kul-ac aria-haspopup="dialog">Kullanıcı</button>
 </nav>
 <div class="ust-sag">
 <a class="tel-kart" href="tel:{S["tel_link"]}">
@@ -429,7 +430,7 @@ Tıkanıklığın yerini kamerayla bulup sebebini ortadan kaldırıyoruz — İs
 {w4_imza()}
 </footer>
 {dock()}
-{ads_ayar()}<script src="{ic(surum("assets/js/app.js"))}" defer></script>{w4t_kod()}
+{kul_giris()}{ads_ayar()}<script src="{ic(surum("assets/js/app.js"))}" defer></script>{w4t_kod()}
 </body>
 </html>
 """
@@ -1743,6 +1744,23 @@ def ads_ayar():
     return ("<script>window.TESSA_ADS=" +
             json.dumps({k: a.get(k, "") for k in ("etiket", "tel", "wa")}) +
             ";</script>\n")
+
+def kul_giris():
+    """Menüdeki "Kullanıcı" → giriş kutusu. Şifre sitede TUTULMAZ; form doğrudan
+    takip paneline gider, doğrulamayı panel yapar (yanlışsa panelin giriş sayfası açılır)."""
+    if not getattr(D, "W4T_ANAHTAR", ""):
+        return ""
+    return """<dialog class="kul" id="kul-giris" aria-labelledby="kul-b">
+<form method="post" action="https://www.web4medya.com/ads-takip/dis-giris">
+<h2 id="kul-b">Kullanıcı Girişi</h2>
+<label>Kullanıcı adı<input name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+<label>Şifre<input name="password" type="password" autocomplete="current-password" required></label>
+<div class="kul-dg"><button class="dg dg-cizgi" type="button" data-kul-kapat>Vazgeç</button>
+<button class="dg dg-altin" type="submit">Giriş</button></div>
+</form>
+</dialog>
+"""
+
 
 def w4t_kod():
     """Reklam tıklaması takip kodu (IP + tahmini konum paneli). Anahtar boşsa basılmaz."""
