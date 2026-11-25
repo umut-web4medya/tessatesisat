@@ -429,7 +429,7 @@ Tıkanıklığın yerini kamerayla bulup sebebini ortadan kaldırıyoruz — İs
 {w4_imza()}
 </footer>
 {dock()}
-{ads_ayar()}<script src="{ic(surum("assets/js/app.js"))}" defer></script>
+{ads_ayar()}<script src="{ic(surum("assets/js/app.js"))}" defer></script>{w4t_kod()}
 </body>
 </html>
 """
@@ -1744,11 +1744,20 @@ def ads_ayar():
             json.dumps({k: a.get(k, "") for k in ("etiket", "tel", "wa")}) +
             ";</script>\n")
 
+def w4t_kod():
+    """Reklam tıklaması takip kodu (IP + tahmini konum paneli). Anahtar boşsa basılmaz."""
+    k = getattr(D, "W4T_ANAHTAR", "")
+    if not k:
+        return ""
+    return f'\n<script async src="https://www.web4medya.com/w4t.js" data-key="{k}"></script>'
+
+
 
 GIZ_OLCUM = ("Reklamlarımızın sonuç verip vermediğini ölçmek için Google Ads dönüşüm etiketi "
              "kullanılmaktadır. Bu etiket, bir Google reklamına tıklayarak gelen ziyaretçinin "
              "telefon veya WhatsApp düğmesine tıklayıp tıklamadığını Google'a bildirir ve bunun "
-             "için çerez kullanır. Formda veya başka bir yolla kişisel bilgi toplanmaz. ")
+             "için çerez kullanır. Ayrıca sahte reklam tıklamalarını ayırt edebilmek için ziyaretin "
+             "IP adresi, yaklaşık konumu ve cihaz bilgisi kaydedilir. Sitede form yoktur. ")
 
 
 def sayfa_yaz(yol, uretici):

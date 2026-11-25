@@ -45,6 +45,11 @@ ADS = {
     "wa":     "AW-18406769336/yx77COLx_o0dELiFhMlE",
 }
 
+# Reklam tıklaması takip paneli (2026-11-26) — web4medya.com/ads-takip, kullanıcı "tessa".
+#   Ziyaretin IP'sini, tahmini konumunu ve reklam tıklama kimliğini kaydeder.
+#   Boş bırakılırsa siteye kod basılmaz.
+W4T_ANAHTAR = "w4-3izhvrjpiicgmugz"
+
 # ⏳ TEYİT BEKLİYOR — kullanıcı onaylayana kadar sitede KULLANILMAZ.
 #    (denetim.py bu listedeki bir ifadeyi HTML'de bulursa uyarı basar)
 TEYITSIZ = [
